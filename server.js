@@ -14,7 +14,7 @@ async function loadData() {
     fs.createReadStream(DATA_FILE)
       .pipe(csv({ 
         separator: '\t',
-        headers: ['seerianumber','toote_nimi','laoj22k1','laoj22k2','laoj22k3','laoj22k4','laoj22k5','col8','hind','m2rkus','hind_koos_km']
+        headers: ['seerianumber','toote_nimi','laoj22k1','laoj22k2','laoj22k3','laoj22k4','laoj22k5','col8','hind','kommentaar','hind_koos_km']
        })) // eraldi andmed jutumärkides
       .on("data", (row) => {
         // 9. veerg – hind
@@ -48,6 +48,28 @@ const app = express ();
 app.get("/", (req, res) => {
   res.json(parts);
 });
+app.get("/spare-parts", (req, res) => {
+  let results = parts;
+
+  const { sn, name } = req.query;
+  //sorteerimine seerianumbri järgi
+  if (sn) {
+    results = results.filter(
+      (item) => item.seerianumber === sn
+    );
+  }
+  //sorteerimine nime järgi
+  if (name) {
+    const lowerName = name.toLowerCase();
+    results = results.filter(
+      (item) =>
+        item.toote_nimi && item.toote_nimi.toLowerCase().includes(lowerName)
+    );
+  }
+  res.json(results);
+});
+
+
 
 const PORT=3300;
 loadData().then(() => {
