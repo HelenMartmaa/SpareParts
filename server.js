@@ -51,7 +51,7 @@ app.get("/", (req, res) => {
 app.get("/spare-parts", (req, res) => {
   let results = parts;
 
-  const { sn, name } = req.query;
+  const { sn, name, page = 1, limit = 30, sort } = req.query;
   //sorteerimine seerianumbri järgi
   if (sn) {
     results = results.filter(
@@ -66,7 +66,38 @@ app.get("/spare-parts", (req, res) => {
         item.toote_nimi && item.toote_nimi.toLowerCase().includes(lowerName)
     );
   }
-  res.json(results);
+
+  if (sort) {
+    const desc = sort.startsWith("-");
+    const field = desc ? sort.substring(1) : sort;
+
+    results.sort((a, b) => {
+      const valA = a[field];
+      const valB = b[field];
+
+      if (!isNaN(valA) && !isNaN(valB)) {
+        return desc ? valB - valA : valA - valB;
+      }
+
+      return desc
+        ? String(valB).localeCompare(String(valA))
+        : String(valA).localeCompare(String(valB));
+    });
+  }
+
+  const pageNum = parseInt(page, 10) || 1;
+  const limitNum = parseInt(limit, 10) || 30;
+  const start = (pageNum -1) * limitNum;
+  const end = start + limitNum;
+
+  const pagedResults = results.slice(start, end);
+
+  res.json({
+    total: results.length,
+    page: pageNum,
+    perPage: limitNum,
+    data: pagedResults,
+  });
 });
 
 
