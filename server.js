@@ -15,7 +15,7 @@ async function loadData() {
       .pipe(csv({ 
         separator: '\t',
         headers: ['seerianumber','toote_nimi','laoj22k1','laoj22k2','laoj22k3','laoj22k4','laoj22k5','col8','hind','kommentaar','hind_koos_km']
-       })) // eraldi andmed jutumärkides
+       }))
       .on("data", (row) => {
         // 9. veerg – hind
         const val9 = row.hind;
