@@ -45,7 +45,7 @@ async function loadData() {
 
 const app = express ();
 //lisame kõik andmed json-i, mis localhostis port 3300
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.json(parts);
 });
 app.get("/spare-parts", (req, res) => {
